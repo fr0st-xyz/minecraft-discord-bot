@@ -1,3 +1,9 @@
 node_modules/
 package-lock.json
 nodemon.json
+
+# Secrets / local config
+config.js
+.env
+.env.*
+*.local
