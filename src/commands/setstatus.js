@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, MessageFlags } = require('discord.js')
-const { statusMessageEdit, consoleLogTranslation, cmdSlashTranslation, getError } = require('../index')
+const { statusMessageEdit, setOfflineEmbed, consoleLogTranslation, cmdSlashTranslation, getError } = require('../index')
 const { autoChangeStatus, mcserver } = require('../../config')
 const chalk = require('chalk')
 const fs = require('fs')
@@ -77,7 +77,10 @@ let run = async ({ interaction, client }) => {
       messageId: msg.id,
       isPlayerAvatarEmoji,
     })
-    await statusMessageEdit(ip, port, type, name, msg, isPlayerAvatarEmoji)
+    const isOnline = await statusMessageEdit(ip, port, type, name, msg, isPlayerAvatarEmoji)
+    if (!isOnline) {
+      await setOfflineEmbed(msg)
+    }
     fs.writeFileSync('./src/data.json', JSON.stringify(dataRead, null, 2), 'utf8')
     interaction.editReply({
       content: cmdSlashTranslation.setstatus.statusMsgSuccess

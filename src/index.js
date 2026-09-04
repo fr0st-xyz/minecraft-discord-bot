@@ -1,5 +1,9 @@
 const { Client, IntentsBitField } = require('discord.js')
 const { status, statusBedrock } = require('@fr0st.xyz/minecraft-server-util')
+
+// exaroton/shared-host endpoints can be slow; use a longer ping timeout than the
+// library default (5s) to avoid false "offline" results from slow responses.
+const PING_TIMEOUT_MS = 15000
 const { settings, bot, mcserver, autoChangeStatus, playerCountCH, commands, autoReply } = require('../config')
 const chalk = require('chalk')
 const fs = require('fs')
@@ -189,8 +193,8 @@ const getServerDataAndPlayerList = async (dataOnly) => {
   try {
     const data =
       mcserver.type === 'java'
-        ? await status(mcserver.ip, mcserver.port)
-        : await statusBedrock(mcserver.ip, mcserver.port)
+        ? await status(mcserver.ip, mcserver.port, { timeout: PING_TIMEOUT_MS })
+        : await statusBedrock(mcserver.ip, mcserver.port, { timeout: PING_TIMEOUT_MS })
     const isOnline = autoChangeStatus.isOnlineCheck ? data.players.max > 0 : true
     if (isOnline) {
       if (dataOnly) return { data, isOnline }
@@ -261,10 +265,10 @@ const getPlayersListWithEmoji = async (playerListRaw) => {
   }
 }
 
-const statusMessageEdit = async (ip, port, type, name, message, isPlayerAvatarEmoji) => {
+const statusMessageEdit = async (ip, port, type, name, message, isPlayerAvatarEmoji, apply = true) => {
   try {
     const { EmbedBuilder } = require('discord.js')
-    const data = type === 'java' ? await status(ip, port) : await statusBedrock(ip, port)
+    const data = type === 'java' ? await status(ip, port, { timeout: PING_TIMEOUT_MS }) : await statusBedrock(ip, port, { timeout: PING_TIMEOUT_MS })
     const isOnline = autoChangeStatus.isOnlineCheck ? data.players.max > 0 : true
 
     const ipBedrock = `IP: \`${ip}\`\nPort: \`${port}\``
@@ -306,28 +310,37 @@ const statusMessageEdit = async (ip, port, type, name, message, isPlayerAvatarEm
         })
         .setTimestamp()
         .setFooter({ text: embedTranslation.onlineEmbed.footer })
-      await message.edit({
-        content: '',
-        embeds: [onlineEmbed],
-      })
+      if (apply) {
+        await message.edit({
+          content: '',
+          embeds: [onlineEmbed],
+        })
+      }
+      return true
     } else {
+      if (!apply) return false
       const { offlineStatus } = require('./embeds')
       await message.edit({
         content: '',
         embeds: [offlineStatus()],
       })
+      return false
     }
   } catch (error) {
     getError(error, 'messageEdit')
-    try {
-      const { offlineStatus } = require('./embeds')
-      await message.edit({
-        content: '',
-        embeds: [offlineStatus()],
-      })
-    } catch (editError) {
-      getError(editError, 'messageEdit')
-    }
+    return false
+  }
+}
+
+const setOfflineEmbed = async (message) => {
+  try {
+    const { offlineStatus } = require('./embeds')
+    await message.edit({
+      content: '',
+      embeds: [offlineStatus()],
+    })
+  } catch (editError) {
+    getError(editError, 'messageEdit')
   }
 }
 
@@ -349,6 +362,7 @@ module.exports = {
   getDateNow,
   getDebug,
   statusMessageEdit,
+  setOfflineEmbed,
   getPlayersList,
   removeUnusedEmojis,
   isChannelAllowed,
