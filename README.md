@@ -1,11 +1,19 @@
- <h3 align="center">
+<h3 align="center">
   <img src="https://i.imgur.com/rXcq12e.png" width="640" height="320" />
-<div align="center">
-  <img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/Nooberpro/minecraft-discord-bot/total?label=Downloads&style=for-the-badge">
-  <a href="https://github.com/Nooberpro/minecraft-discord-bot/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/Nooberpro/minecraft-discord-bot?style=for-the-badge"></a>
-  <a href="https://github.com/Nooberpro/minecraft-discord-bot/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/Nooberpro/minecraft-discord-bot?style=for-the-badge"></a>
-  <img src="https://img.shields.io/github/forks/NooberPro/minecraft-discord-bot?style=for-the-badge&color=5D6D7E" alt="GitHub Forks" /><br>
-</div>
+</h3>
+
+
+> [!WARNING]
+> This bot originally used [node-mcstatus](https://github.com/mcstatus-io/node-mcstatus), which relies on [mcstatus.io](https://mcstatus.io/) for server status.
+>
+> I fixed this by switching the bot to my own fork of [`minecraft-server-util`](https://www.npmjs.com/package/@fr0st.xyz/minecraft-server-util), which communicates directly with the Minecraft server instead of relying on [mcstatus.io](https://mcstatus.io/).
+>
+> I forked and published the package myself, made the necessary fixes to the bot, and got the server status, player list, MOTD, and other information working properly again.
+>
+> 
+> So yeah, Enjoy!
+
+
 
 ## Features
 
