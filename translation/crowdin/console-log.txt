@@ -1,6 +1,6 @@
-GitHub: https://github.com/NooberPro/minecraft-discord-bot
+GitHub: https://github.com/fr0st-xyz/minecraft-discord-bot
 Crowdin: https://crowdin.com/project/minecraft-discord-bot
-English Translation (en) by NooberPro
+English Translation (en) by fr0st-xyz
 Translation for the console output.
 Use {channelName} fetches the name of the status message channel.
 Use {cmd} retrieves the setstatus command.

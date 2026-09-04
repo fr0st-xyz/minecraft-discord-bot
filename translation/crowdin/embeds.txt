@@ -1,6 +1,6 @@
-GitHub: https://github.com/NooberPro/minecraft-discord-bot
+GitHub: https://github.com/fr0st-xyz/minecraft-discord-bot
 Crowdin: https://crowdin.com/project/minecraft-discord-bot
-English translated (en) by NooberPro
+English translated (en) by fr0st-xyz
 Translation for command embeds message.
 Variables: {ip}
 Variables: {site}

@@ -1,5 +1,5 @@
 const { Client, IntentsBitField } = require('discord.js')
-const { statusBedrock, statusJava } = require('node-mcstatus')
+const { status, statusBedrock } = require('@fr0st.xyz/minecraft-server-util')
 const { settings, bot, mcserver, autoChangeStatus, playerCountCH, commands, autoReply } = require('../config')
 const chalk = require('chalk')
 const fs = require('fs')
@@ -130,7 +130,7 @@ const groupPlayerList = (playerListArrayRaw) => {
   ]
   const groups = [[], [], []]
   playerListArrayRaw.list.forEach((person, index) => {
-    groups[index % 3].push(person.name_clean ?? person)
+    groups[index % 3].push(person.name ?? person)
   })
   for (let i = 0; i < 3; i++) {
     if (groups[i][0] === undefined) continue
@@ -174,10 +174,10 @@ const getPlayersList = async (playerListRaw) => {
           .replace(/\{playermax\}/gi, playerListRaw.max),
       },
     ]
-    if (!playerListRaw.list?.length || mcserver.type === 'bedrock') {
+    if (!playerListRaw.sample?.length || mcserver.type === 'bedrock') {
       return playerListArray
     } else {
-      playerListArray = groupPlayerList(playerListRaw)
+      playerListArray = groupPlayerList({ ...playerListRaw, list: playerListRaw.sample })
       return playerListArray
     }
   } catch (error) {
@@ -189,9 +189,9 @@ const getServerDataAndPlayerList = async (dataOnly) => {
   try {
     const data =
       mcserver.type === 'java'
-        ? await statusJava(mcserver.ip, mcserver.port)
+        ? await status(mcserver.ip, mcserver.port)
         : await statusBedrock(mcserver.ip, mcserver.port)
-    const isOnline = autoChangeStatus.isOnlineCheck ? data.online && data.players.max > 0 : data.online
+    const isOnline = autoChangeStatus.isOnlineCheck ? data.players.max > 0 : true
     if (isOnline) {
       if (dataOnly) return { data, isOnline }
       const playerListArray = await getPlayersList(data.players)
@@ -203,9 +203,10 @@ const getServerDataAndPlayerList = async (dataOnly) => {
   } catch (error) {
     if (dataOnly) {
       getError(error, 'fetchServerData')
-      return
+      return { data: null, isOnline: false }
     }
     getError(error, 'fetchServerDataAndPlayerList')
+    return { data: null, playerListArray: [], isOnline: false }
   }
 }
 
@@ -229,21 +230,21 @@ const getPlayersListWithEmoji = async (playerListRaw) => {
 
     // If the player avatar is in the emoji list, add it to the player list
     for (const emojis of emojisList) {
-      if (playerListRaw.list.some((player) => player.name_clean === emojis[1].name)) {
-        playerList.push({ name_clean: `<:${emojis[1].name}:${emojis[1].id}> ${emojis[1].name}` })
+      if (playerListRaw.sample.some((player) => player.name === emojis[1].name)) {
+        playerList.push({ name: `<:${emojis[1].name}:${emojis[1].id}> ${emojis[1].name}` })
         UsedPlayerEmojis.push(emojis[1].name)
       }
     }
 
     // CHECKING IF PLAYER LIST IN EMOJIS LIST , IF NOT THEN CREATE IT.
-    for (const { name_clean, uuid } of playerListRaw.list) {
-      if (emojisList.some((emoji) => emoji.name === name_clean)) continue
+    for (const { name, id } of playerListRaw.sample) {
+      if (emojisList.some((emoji) => emoji.name === name)) continue
       const createEmoji = await client.application.emojis.create({
-        attachment: `https://api.mineatar.io/head/${uuid}?scale=8&overlay=true`,
-        name: name_clean,
+        attachment: `https://api.mineatar.io/head/${id}?scale=8&overlay=true`,
+        name: name,
       })
       playerList.push({
-        name_clean: `<:${createEmoji.name}:${createEmoji.id}> ${createEmoji.name}`,
+        name: `<:${createEmoji.name}:${createEmoji.id}> ${createEmoji.name}`,
       })
       UsedPlayerEmojis.push(createEmoji.name)
     }
@@ -263,8 +264,8 @@ const getPlayersListWithEmoji = async (playerListRaw) => {
 const statusMessageEdit = async (ip, port, type, name, message, isPlayerAvatarEmoji) => {
   try {
     const { EmbedBuilder } = require('discord.js')
-    const data = type === 'java' ? await statusJava(ip, port) : await statusBedrock(ip, port)
-    const isOnline = autoChangeStatus.isOnlineCheck ? data.online && data.players.max > 0 : data.online
+    const data = type === 'java' ? await status(ip, port) : await statusBedrock(ip, port)
+    const isOnline = autoChangeStatus.isOnlineCheck ? data.players.max > 0 : true
 
     const ipBedrock = `IP: \`${ip}\`\nPort: \`${port}\``
     const portNumber = port === 25565 ? '' : `:\`${port}\``
@@ -278,7 +279,7 @@ const statusMessageEdit = async (ip, port, type, name, message, isPlayerAvatarEm
           : await getPlayersList(data.players)
 
       function editDescriptionFields(description) {
-        const isVersion = type === 'java' ? data.version.name_clean : data.version.name
+        const isVersion = data.version.name
         let string = description
           .trim()
           .replace(/\{ip\}/gi, ipaddress)
@@ -318,6 +319,15 @@ const statusMessageEdit = async (ip, port, type, name, message, isPlayerAvatarEm
     }
   } catch (error) {
     getError(error, 'messageEdit')
+    try {
+      const { offlineStatus } = require('./embeds')
+      await message.edit({
+        content: '',
+        embeds: [offlineStatus()],
+      })
+    } catch (editError) {
+      getError(editError, 'messageEdit')
+    }
   }
 }
 

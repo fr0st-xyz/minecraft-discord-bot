@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NooberPro/minecraft-discord-bot.git"
+    "url": "git+https://github.com/fr0st-xyz/minecraft-discord-bot.git"
   },
   "keywords": [
     "minecraft",
@@ -18,17 +18,17 @@
     "discord-js",
     "minecraft-bot"
   ],
-  "author": "NooberPro",
+  "author": "fr0st",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NooberPro/minecraft-discord-bot/issues"
+    "url": "https://github.com/fr0st-xyz/minecraft-discord-bot/issues"
   },
-  "homepage": "https://github.com/NooberPro/minecraft-discord-bot#readme",
+  "homepage": "https://github.com/fr0st-xyz/minecraft-discord-bot#readme",
   "dependencies": {
+    "@fr0st.xyz/minecraft-server-util": "^5.4.8",
     "chalk": "^4.1.2",
     "commandkit": "^0.1.10",
     "discord.js": "^14.18.0",
-    "json5": "^2.2.3",
-    "node-mcstatus": "^1.2.1"
+    "json5": "^2.2.3"
   }
 }
