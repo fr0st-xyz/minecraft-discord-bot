@@ -97,5 +97,5 @@ A big thanks to the following contributors who have helped with translations:
 
 - **[Node.js](https://nodejs.org/en/download)**
 - **[Discord.js](https://discord.js.org/)**
-- **[node-mcstatus](https://www.npmjs.com/package/node-mcstatus)**
+- **[minecraft-server-util](https://www.npmjs.com/package/@fr0st.xyz/minecraft-server-util)**
 - **[CommandKit](https://commandkit.js.org/)**
