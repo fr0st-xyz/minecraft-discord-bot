@@ -75,11 +75,14 @@
 
 5. **Start the bot with `npm start` or `node .`.**
 
+<!---
 #### Quick Start on Replit
 
 **You can also run the bot directly and easily by clicking the "Run on Replit" button below.**
 
 [![Run on Replit](https://replit.com/badge/github/NooberPro/minecraft-discord-bot)](https://replit.com/new/github/NooberPro/minecraft-discord-bot)
+
+
 
 ## Translations
 
@@ -90,6 +93,8 @@
 A big thanks to the following contributors who have helped with translations:
 
 - **[Zahar1loshara](https://crowdin.com/profile/Zahar1loshara)** - Russian, Ukrainian
+
+--->
 
 ## Built with
 
